@@ -806,6 +806,9 @@ if ! [ -e /etc/gromox/spamrun.cfg ]; then
 # RSPAMC_OPTS=( -h a.b.c.d:1234 -P myverysecurepass )
 RSPAMC_OPTS=()
 
+# Use soft-delete with gromox-mbop delmsg?
+SOFT_DELETE=true
+
 # SPAM #
 # Only scan messages which are older than n days.
 # Default: SPAMRUN_DAYS=7
@@ -889,6 +892,7 @@ EOF
 fi
 
 RSPAMC_OPTS=()
+SOFT_DELETE=true
 SPAMRUN_DAYS=7
 SPAMRUN_DELETE=false
 if [ -r /etc/gromox/spamrun.cfg ]; then
@@ -963,7 +967,7 @@ if ${MYSQL_CMD}<<<"exit"&>/dev/null; then
     while read -r MESSAGEID MIDSTRING; do
       MBOP_CMD="$(command -v gromox-mbop)"
       MBOP_CMD="$MBOP_CMD -u "$USERNAME" delmsg"
-      if [ $SOFT_DELETE = "true" ]; then
+      if [ "$SOFT_DELETE" = "true" ]; then
         MBOP_CMD="$MBOP_CMD --soft"
       fi
       echo "Learning spam for user ${USERNAME}" | systemd-cat -t grommunio-spam-run -p info
@@ -1054,6 +1058,7 @@ EOF
 fi
 
 RSPAMC_OPTS=()
+SOFT_DELETE=true
 HAMRUN_FOLDER="TRAIN-HAM"
 HAMRUN_DELETE=false
 if [ -r /etc/gromox/spamrun.cfg ]; then
@@ -1125,7 +1130,7 @@ if ${MYSQL_CMD}<<<"exit"&>/dev/null; then
     while IFS='|' read -r MESSAGEID MIDSTRING FOLDERID; do
       MBOP_CMD="$(command -v gromox-mbop)"
       MBOP_CMD="$MBOP_CMD -u "$USERNAME" delmsg"
-      if [ $SOFT_DELETE = "true" ]; then
+      if [ "$SOFT_DELETE" = "true" ]; then
         MBOP_CMD="$MBOP_CMD --soft"
       fi
       echo "Learning ham for user ${USERNAME}" | systemd-cat -t grommunio-ham-run -p info
